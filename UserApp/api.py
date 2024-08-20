@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 
 
 @api_view(["POST"])
@@ -34,7 +35,10 @@ def UserLoginApi(request):
 
     if user is not None:
         login(request, user)  # Login method should be called with the request object
-        return Response({"message": "User Logged In"}, status=status.HTTP_200_OK)
+        token, created = Token.objects.get_or_create(user=user)
+        return Response(
+            {"message": "User Logged In", "token": token.key}, status=status.HTTP_200_OK
+        )
     else:
         return Response(
             {"message": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED
