@@ -79,3 +79,43 @@ class BookViewSet(ModelViewSet):
         books = BookModel.objects.filter(author=user)
         serializer = self.get_Serializer(books, many=True)
         return Response(serializer.data)
+
+    def create(self, request):
+        # POST
+        if not request.user.is_authenticated:
+            return Response({"message": "Please Login"})
+            # the data is price and name
+        data = request.data
+        # author
+        user = request.user
+
+        serializer = self.get_Serializer(data)
+
+        if serializer.is_valid():
+            serializer.save(author=user)
+        return Response({"message": "Book Created"})
+
+    def update(self, request, pk):
+        # PUT
+        if not request.user.is_authenticated:
+            return Response({"Please Login"})
+
+        book = BookModel.objects.get(id=pk)
+        if book.author == request.user:
+            data = request.data
+            serializer = self.get_serializer(instance=book, data=data)
+            if serializer.is_valid():
+                serializer.save()
+            return Response({"message": "Book UPdated"})
+        return Response({"message": "YOu are not author"})
+
+        data = request.data
+
+    def destroy(self, request, pk):
+        if not request.user.is_authenticated:
+            return Response({"message": "Please Login"})
+        book = BookModel.objects.get(id=pk)
+        if book.author == request.user:
+            book.delete()
+            return Response({"message": "Book Deleted"})
+        return Response({"message": "Not authorized to delete the book"})
