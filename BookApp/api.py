@@ -16,49 +16,57 @@ class BookModelSerializer(serializers.ModelSerializer):
         return data
 
 
-@api_view(["GET"])
-def BookListApi(request):
-    # fetch data from db
-    books = BookModel.objects.all()
-    # convert to json because of the api
+# @api_view(["GET"])
+# def BookListApi(request):
+#     # fetch data from db
+#     books = BookModel.objects.all()
+#     # convert to json because of the api
 
-    serializer = BookModelSerializer(books, many=True)
+#     serializer = BookModelSerializer(books, many=True)
 
-    return Response(serializer.data)
-
-
-# POST request
-@api_view(["POST"])
-def BookCreateApi(request):
-
-    # get data and post data in the db
-    data = request.data
-    serializer = BookModelSerializer(data=data)
-
-    if serializer.is_valid():
-        serializer.save()
-
-    return Response({"message": "Book Created"})
+#     return Response(serializer.data)
 
 
-@api_view(["PUT"])
-def BookUpdateApi(request, id):
+# # POST request
+# @api_view(["POST"])
+# def BookCreateApi(request):
 
-    data = request.data
+#     # get data and post data in the db
+#     data = request.data
+#     serializer = BookModelSerializer(data=data)
 
-    book = BookModel.objects.get(id=id)
-    serializer = BookModelSerializer(instance=book, data=data)
+#     if serializer.is_valid():
+#         serializer.save()
 
-    if serializer.is_valid():
-        serializer.save()
-
-        return Response({"message": "updated"})
-    return Response(serializer.errors)
+#     return Response({"message": "Book Created"})
 
 
-@api_view(["DELETE"])
-def BookDeleteApi(request, id):
-    book = BookModel.objects.get(id=id)
-    book.delete()
+# @api_view(["PUT"])
+# def BookUpdateApi(request, id):
 
-    return Response({"message": "book deleted"})
+#     data = request.data
+
+#     book = BookModel.objects.get(id=id)
+#     serializer = BookModelSerializer(instance=book, data=data)
+
+#     if serializer.is_valid():
+#         serializer.save()
+
+#         return Response({"message": "updated"})
+#     return Response(serializer.errors)
+
+
+# @api_view(["DELETE"])
+# def BookDeleteApi(request, id):
+#     book = BookModel.objects.get(id=id)
+#     book.delete()
+
+#     return Response({"message": "book deleted"})
+
+
+from rest_framework.viewsets import ModelViewSet
+
+
+class BookViewSet(ModelViewSet):
+    queryset = BookModel.objects.all()
+    serializer_class = BookModelSerializer
