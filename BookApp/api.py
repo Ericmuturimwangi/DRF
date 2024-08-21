@@ -70,3 +70,12 @@ from rest_framework.viewsets import ModelViewSet
 class BookViewSet(ModelViewSet):
     queryset = BookModel.objects.all()
     serializer_class = BookModelSerializer
+
+    def list(self, request):
+        # if not logged in
+        if not request.user.is_authenticated:
+            return Response({"message": "Please Login"})
+        user = request.user
+        books = BookModel.objects.filter(author=user)
+        serializer = self.get_Serializer(books, many=True)
+        return Response(serializer.data)
