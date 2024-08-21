@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import BookModel
 from rest_framework import serializers
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 class BookModelSerializer(serializers.ModelSerializer):
@@ -70,11 +71,10 @@ from rest_framework.viewsets import ModelViewSet
 class BookViewSet(ModelViewSet):
     queryset = BookModel.objects.all()
     serializer_class = BookModelSerializer
+    permission_classes = [IsAuthenticated]
 
     def list(self, request):
-        # if not logged in
-        if not request.user.is_authenticated:
-            return Response({"message": "Please Login"})
+
         user = request.user
         books = BookModel.objects.filter(author=user)
         serializer = self.get_Serializer(books, many=True)
@@ -82,14 +82,12 @@ class BookViewSet(ModelViewSet):
 
     def create(self, request):
         # POST
-        if not request.user.is_authenticated:
-            return Response({"message": "Please Login"})
-            # the data is price and name
+
         data = request.data
         # author
         user = request.user
 
-        serializer = self.get_Serializer(data)
+        serializer = self.get_serializer(data)
 
         if serializer.is_valid():
             serializer.save(author=user)
