@@ -74,7 +74,10 @@ DATABASES = {
     }
 }
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "PAGE_SIZE": 1,
 }
 
 # Password validation
